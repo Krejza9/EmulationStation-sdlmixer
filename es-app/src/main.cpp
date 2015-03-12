@@ -18,6 +18,7 @@
 #include "EmulationStation.h"
 #include "Settings.h"
 #include "ScraperCmdLine.h"
+#include "VolumeControl.h"
 #include <sstream>
 
 #ifdef WIN32
@@ -279,6 +280,7 @@ int main(int argc, char* argv[])
 	bool running = true;
 
  // Initialize audio manager
+ VolumeControl::getInstance()->init();
  AudioManager::getInstance()->init();
  
 	while(running)
