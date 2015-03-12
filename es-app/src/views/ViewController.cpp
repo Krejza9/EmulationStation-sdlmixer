@@ -12,6 +12,9 @@
 #include "animations/MoveCameraAnimation.h"
 #include "animations/LambdaAnimation.h"
 
+#include "Music.h"
+
+
 ViewController* ViewController::sInstance = NULL;
 
 ViewController* ViewController::get()
@@ -72,6 +75,8 @@ void ViewController::goToNextGameList()
 	assert(mState.viewing == GAME_LIST);
 	SystemData* system = getState().getSystem();
 	assert(system);
+	Music::startMusic(system->getNext()->getTheme());
+
 	goToGameList(system->getNext());
 }
 
@@ -80,6 +85,8 @@ void ViewController::goToPrevGameList()
 	assert(mState.viewing == GAME_LIST);
 	SystemData* system = getState().getSystem();
 	assert(system);
+	Music::startMusic(system->getPrev()->getTheme());
+	
 	goToGameList(system->getPrev());
 }
 
