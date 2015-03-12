@@ -2,7 +2,6 @@
 //http://www.aloshi.com
 
 #include <SDL.h>
-#include <SDL_mixer.h>
 
 #include <iostream>
 #include <iomanip>
@@ -12,16 +11,14 @@
 #include <boost/filesystem.hpp>
 #include "guis/GuiDetectDevice.h"
 #include "guis/GuiMsgBox.h"
-//#include "AudioManager.h"
+#include "AudioManager.h"
 #include "platform.h"
 #include "Log.h"
 #include "Window.h"
 #include "EmulationStation.h"
 #include "Settings.h"
 #include "ScraperCmdLine.h"
-#include "Music.h"
 #include <sstream>
-#include <boost/locale.hpp>
 
 #ifdef WIN32
 #include <Windows.h>
@@ -68,7 +65,7 @@ bool parseArgs(int argc, char* argv[], unsigned int* width, unsigned int* height
 			Settings::getInstance()->setBool("Windowed", true);
 		}else if(strcmp(argv[i], "--vsync") == 0)
 		{
-			bool vsync = (strcmp(argv[i + 1], "on") == 0 || strcmp(argv[i + 1], "1") == 0) ? true : false;
+			bool vsync = (strcmp(argv[i + 1], "true") == 0 || strcmp(argv[i + 1], "1") == 0) ? true : false;
 			Settings::getInstance()->setBool("VSync", vsync);
 			i++; // skip vsync value
 		}else if(strcmp(argv[i], "--scrape") == 0)
@@ -97,7 +94,7 @@ bool parseArgs(int argc, char* argv[], unsigned int* width, unsigned int* height
 				"--debug				more logging, show console on Windows\n"
 				"--scrape			scrape using command line interface\n"
 				"--windowed			not fullscreen, should be used with --resolution\n"
-				"--vsync [1/on or 0/off]		turn vsync on or off (default is on)\n"
+				"--vsync [1/true or 0/false]		turn vsync on or off (default is on)\n"
 				"--help, -h			summon a sentient, angry tuba\n\n"
 				"More information available in README.md.\n";
 			return false; //exit after printing help
@@ -162,9 +159,6 @@ int main(int argc, char* argv[])
 {
 	unsigned int width = 0;
 	unsigned int height = 0;
-
-	std::locale::global(boost::locale::generator().generate(""));
-	boost::filesystem::path::imbue(std::locale());
 
 	if(!parseArgs(argc, argv, &width, &height))
 		return 0;
@@ -284,15 +278,8 @@ int main(int argc, char* argv[])
 	int lastTime = SDL_GetTicks();
 	bool running = true;
 
-// // START SDLMIXER
-// if( Mix_OpenAudio( 44100, MIX_DEFAULT_FORMAT, 2, 2048 ) < 0 ){
-// //if (SDL_OpenAudio(&sAudioFormat, NULL) < 0) {
-// LOG(LogError) << "SDL AUDIO Error - Unable to open SDL audio: " << SDL_GetError() << std::endl;
-// }else {
-// LOG(LogInfo) << "SDL AUDIO OK" << std::endl;
-// }
- Music::init();
-//Sound::get("./bg.mp3")->play();
+ // Initialize audio manager
+ AudioManager::getInstance()->init();
  
 	while(running)
 	{
